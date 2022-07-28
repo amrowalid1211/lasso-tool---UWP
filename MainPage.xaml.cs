@@ -36,6 +36,7 @@ namespace lasso_tool
         Point a = new Point(-1,-1);
         List<Point> points = new List<Point>();
         WriteableBitmap imageWriteableBitmap;
+        SoftwareBitmap softwareBitmap;
         int minX = int.MaxValue,minY = int.MaxValue, maxX = int.MinValue, maxY= int.MinValue;
         HashSet<System.Drawing.Point> visited = new HashSet<System.Drawing.Point>();
         public MainPage()
@@ -137,6 +138,9 @@ namespace lasso_tool
             await pixelStream.ReadAsync(pixels, 0, pixels.Length);
 
             encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, (uint)masked.PixelWidth, (uint)masked.PixelHeight, 96.0, 96.0, pixels);
+            //Software Bitmap
+            encoder.SetSoftwareBitmap(softwareBitmap);
+
             await encoder.FlushAsync();
             var streamRef = RandomAccessStreamReference.CreateFromStream(stream);
             DataPackage dataPackage = new DataPackage();
