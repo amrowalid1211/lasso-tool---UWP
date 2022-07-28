@@ -137,9 +137,10 @@ namespace lasso_tool
             byte[] pixels = new byte[pixelStream.Length];
             await pixelStream.ReadAsync(pixels, 0, pixels.Length);
 
-            encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, (uint)masked.PixelWidth, (uint)masked.PixelHeight, 96.0, 96.0, pixels);
             //Software Bitmap
+            softwareBitmap = new SoftwareBitmap(BitmapPixelFormat.Bgra8, masked.PixelWidth,masked.PixelHeight);
             encoder.SetSoftwareBitmap(softwareBitmap);
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, (uint)masked.PixelWidth, (uint)masked.PixelHeight, 96.0, 96.0, pixels);
 
             await encoder.FlushAsync();
             var streamRef = RandomAccessStreamReference.CreateFromStream(stream);
