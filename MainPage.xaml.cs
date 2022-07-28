@@ -33,7 +33,7 @@ namespace lasso_tool
         List<Point> points = new List<Point>();
         WriteableBitmap imageWriteableBitmap;
         Double minX = Double.MaxValue,minY = Double.MaxValue, maxX = Double.MinValue, maxY= Double.MinValue;
-
+        HashSet<Point> visited = new HashSet<Point>();
         public MainPage()
         {
             this.InitializeComponent();
@@ -72,7 +72,7 @@ namespace lasso_tool
                 minY = Math.Min(minY, point.Y);
                 maxX = Math.Max(maxX, point.X);
                 maxY = Math.Max(maxY, point.Y);
-
+                visited.Add(point);
                 if (a.X!=-1)
                 {
                     imageWriteableBitmap.DrawLine((int)a.X, (int)a.Y, (int)point.X, (int)point.Y, Colors.Black);
@@ -92,6 +92,7 @@ namespace lasso_tool
             WriteableBitmap c = BitmapFactory.New((int)lassoImg.ActualWidth, (int)lassoImg.ActualHeight);// await BitmapFactory.FromContent(new Uri(this.BaseUri,"/Assets/x.png"));
             c.Clear(Colors.White);
             c.Blit(new Rect(new Point(minX, minY), new Point(maxX,maxY)), imageWriteableBitmap, new Rect(new Point(minX, minY), new Point(maxX, maxY)));
+            //clearLasso(visited, imageWriteableBitmap);
             lassoImg.Source = c;
             //c.Clear(Colors.AliceBlue);
             //c.Blit(new Rect(new Point(300,300),new Size(500,500)), imageWriteableBitmap, new Rect(100, 100, 300, 300));
@@ -101,7 +102,9 @@ namespace lasso_tool
 
         }
 
-
-        
+        private void clearLasso(HashSet<Point> visited, WriteableBitmap imageWriteableBitmap)
+        {
+            //Dictionary<int,List<Point>> map = Line.getPointsFromDrawing()
+        }
     }
 }

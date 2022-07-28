@@ -17,20 +17,31 @@ namespace lasso_tool
             this.p2 = p2;
         }
 
-        public SortedDictionary<int, List<int>> getPointsFromDrawing(HashSet<Point> drawnPoints)
+        public static SortedDictionary<int, List<int>> getPointsFromDrawing(HashSet<Point> drawnPoints)
         {
             SortedDictionary<int, List<int>> points = new SortedDictionary<int, List<int>>();
             for (int i = 0; i < drawnPoints.Count-1; i++)
             {
                 Point a = drawnPoints.ElementAt(i);
                 Point b = drawnPoints.ElementAt(i+1);
-
+                SortedDictionary<int, List<int>> keyValuePairs = getPoints(a, b);
+                foreach(KeyValuePair<int, List<int>> pair in keyValuePairs)
+                {
+                    if (points.ContainsKey(pair.Key))
+                    {
+                        points[pair.Key].AddRange(pair.Value);
+                        points[pair.Key].Sort();
+                    }else
+                    {
+                        points.Add(pair.Key, pair.Value);
+                    }
+                }
             }
             return points;
         }
 
 
-        public SortedDictionary<int, List<int>> getPoints()
+        public static SortedDictionary<int, List<int>> getPoints(Point p1,Point p2)
         {
             //var points = new Point[Math.Max(p2.X-p1.X,p2.Y-p1.X) + 10];
             int quantity = (int) Math.Max(p2.X - p1.X, p2.Y - p1.X) + 10;
@@ -51,7 +62,7 @@ namespace lasso_tool
             return points;
         }
 
-        private void addPointOnLineDictionary(Point point, SortedDictionary<int, List<int>> points)
+        private static void addPointOnLineDictionary(Point point, SortedDictionary<int, List<int>> points)
         {
             if (points.ContainsKey(point.X))
             {
