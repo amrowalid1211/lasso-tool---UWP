@@ -36,10 +36,22 @@ namespace lasso_tool
                         points.Add(pair.Key, pair.Value);
                     }
                 }
+               // points = removeSinglePoints(points);
             }
             return points;
         }
 
+        private static SortedDictionary<int, List<int>> removeSinglePoints(SortedDictionary<int, List<int>> points)
+        {
+            SortedDictionary<int, List<int>> DoublePoints = new SortedDictionary<int, List<int>>();
+            foreach (KeyValuePair<int, List<int>> pair in points)
+            {
+                List<int> pointList = pair.Value;
+                if(pointList[0] != pointList[pointList.Count-1])
+                    DoublePoints.Add(pair.Key,pair.Value);
+            }
+            return DoublePoints;
+        }
 
         public static SortedDictionary<int, List<int>> getPoints(Point p1,Point p2)
         {

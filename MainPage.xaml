@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Background="Black" Width="1500">
-        <Image x:Name="lassoImg" HorizontalAlignment="Center" Height="669" Margin="0,10,0,0" VerticalAlignment="Top" Width="1179" Source="/Assets/photomode_01082021_192636.png" PointerPressed="Image_PointerPressed" PointerMoved="Image_PointerMoved" PointerReleased="Image_PointerReleased"/>
+        <Image x:Name="lassoImg" HorizontalAlignment="Center" Height="669" Margin="0,10,0,0" VerticalAlignment="Top" Width="1179" Source="/Assets/photomode_01082021_192636.png" PointerPressed="Image_PointerPressed" PointerMoved="Image_PointerMoved" PointerReleased="Image_PointerReleased" Stretch="None"/>
 
     </Grid>
 </Page>
