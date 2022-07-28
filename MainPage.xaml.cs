@@ -19,6 +19,9 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.Storage;
 using Windows.ApplicationModel.DataTransfer;
+using Microsoft.Graphics.Canvas;
+using Windows.Graphics.Imaging;
+using Windows.Graphics.DirectX;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -97,7 +100,7 @@ namespace lasso_tool
             visited.Clear();
         }
 
-        private void clearLassoOnDrawnPoints(HashSet<System.Drawing.Point> visited, WriteableBitmap c)
+        private async void clearLassoOnDrawnPoints(HashSet<System.Drawing.Point> visited, WriteableBitmap c)
         {
             List<int> selectedPoints = new List<int>();
             int pointC = 0;
@@ -107,17 +110,64 @@ namespace lasso_tool
                 selectedPoints.Add(visited.ElementAt(i).Y-minY);
               
             }
-
+            
              selectedPoints.Add(selectedPoints.ElementAt(0));
              selectedPoints.Add(selectedPoints.ElementAt(1));
-            c.Clear(Colors.Transparent);
+            c.Clear(Colors.White);
 
-            c.FillPolygon(selectedPoints.ToArray(), Colors.White);
-            WriteableBitmap inverted = c.Invert();
-            lassoImg.Source = inverted;
+            c.FillPolygon(selectedPoints.ToArray(), Colors.Transparent);
+           // WriteableBitmap inverted = c.Invert();
+            WriteableBitmap masked = BitmapFactory.New(c.PixelWidth, c.PixelHeight);
+            masked.Blit(new Rect(new Point(0, 0), new Point(maxX - minX, maxY - minY)), imageWriteableBitmap, new Rect(new Point(minX, minY), new Point(maxX, maxY)), WriteableBitmapExtensions.BlendMode.Alpha);
+
+            masked.Blit(new Rect(new Point(0, 0), new Point(maxX - minX, maxY - minY)), c, new Rect(new Point(0, 0), new Point(maxX - minX, maxY - minY)),WriteableBitmapExtensions.BlendMode.Alpha);
+            masked.ForEach((x, y, color) =>
+            {
+                if (color == Colors.White)
+                    return Colors.Transparent;
+                return color;
+            });
             
+
+            var stream = new InMemoryRandomAccessStream();
+
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+            Stream pixelStream = masked.PixelBuffer.AsStream();
+            byte[] pixels = new byte[pixelStream.Length];
+            await pixelStream.ReadAsync(pixels, 0, pixels.Length);
+
+            encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, (uint)masked.PixelWidth, (uint)masked.PixelHeight, 96.0, 96.0, pixels);
+            await encoder.FlushAsync();
+            var streamRef = RandomAccessStreamReference.CreateFromStream(stream);
+            DataPackage dataPackage = new DataPackage();
+            dataPackage.RequestedOperation = DataPackageOperation.Copy;
+
+            dataPackage.SetBitmap(streamRef);
+
+            Clipboard.SetContent(dataPackage);
+            lassoImg.Source = masked;
+
+
+            /*
+            Byte[] pixelData = masked.PixelBuffer.ToArray();
+            using (Stream stream = masked.PixelBuffer.AsStream())
+            {
+                await stream.WriteAsync(pixelData, 0, pixelData.Length);
+                
+            }
+            var streamInMemory = new InMemoryRandomAccessStream();
+            await pixelStream.ReadAsync(pixels, 0, pixels.Length);
+
+            var str = RandomAccessStreamReference.CreateFromStream(masked.PixelBuffer.AsStream().AsRandomAccessStream());
+            DataPackage dataPackage = new DataPackage();
+            dataPackage.RequestedOperation = DataPackageOperation.Copy;
+
+            dataPackage.SetBitmap(str);
+
+            Clipboard.SetContent(dataPackage);
+            */
         }
 
-        
+
     }
 }
